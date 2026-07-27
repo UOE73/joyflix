@@ -9,11 +9,33 @@ import { SearchResult } from '@/lib/types';
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
-  console.log(request.url);
+  const storageType = process.env.NEXT_PUBLIC_STORAGE_TYPE || 'localstorage';
+  if (storageType === 'localstorage') {
+    return NextResponse.json({
+      success: true,
+      skipped: true,
+      message: 'No server-side records to refresh in localstorage mode',
+    });
+  }
+
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json(
+      { success: false, message: 'CRON_SECRET is not configured' },
+      { status: 503 }
+    );
+  }
+  if (request.headers.get('authorization') !== `Bearer ${cronSecret}`) {
+    return NextResponse.json(
+      { success: false, message: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     console.log('Cron job triggered:', new Date().toISOString());
 
-    refreshRecordAndFavorites();
+    await refreshRecordAndFavorites();
 
     return NextResponse.json({
       success: true,

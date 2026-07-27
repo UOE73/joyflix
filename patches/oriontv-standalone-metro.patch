@@ -1,0 +1,16 @@
+diff --git a/metro.config.js b/metro.config.js
+index bb89138..fbca969 100644
+--- a/metro.config.js
++++ b/metro.config.js
+@@ -26,7 +26,10 @@ const config = getDefaultConfig(projectRoot);
+ // }
+ 
+ // This can be replaced with `find-yarn-workspace-root`
+-const monorepoRoot = path.resolve(projectRoot, "../..");
++const monorepoRoot =
++  process.env.EXPO_USE_METRO_WORKSPACE_ROOT === "1"
++    ? path.resolve(projectRoot, "../..")
++    : projectRoot;
+ 
+ // 1. Watch all files within the monorepo
+ config.watchFolders = [monorepoRoot];

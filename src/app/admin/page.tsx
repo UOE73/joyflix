@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Settings, Users, FolderOpen, Video } from 'lucide-react';
@@ -14,7 +13,8 @@ const MySwal = Swal.mixin({
   customClass: {
     popup:
       'w-full max-w-md transform overflow-hidden rounded-2xl !bg-white p-6 text-left align-middle shadow-xl transition-all backdrop-blur-xl',
-    title: 'text-lg font-semibold leading-6 text-neutral-900 dark:text-neutral-100',
+    title:
+      'text-lg font-semibold leading-6 text-neutral-900 dark:text-neutral-100',
     htmlContainer: 'mt-2 text-sm text-neutral-600 dark:text-neutral-300',
     confirmButton:
       'inline-flex justify-center rounded-md border border-transparent bg-blue-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors',
@@ -26,10 +26,24 @@ const MySwal = Swal.mixin({
   background: 'rgba(255, 255, 255, 0.8)',
 });
 
-const showError = (message: string) => MySwal.fire({ icon: 'error', title: '错误', text: message });
-const showSuccess = (message: string) => MySwal.fire({ icon: 'success', title: '成功', text: message, timer: 4000, showConfirmButton: false });
+const showError = (message: string) =>
+  MySwal.fire({ icon: 'error', title: '错误', text: message });
+const showSuccess = (message: string) =>
+  MySwal.fire({
+    icon: 'success',
+    title: '成功',
+    text: message,
+    timer: 4000,
+    showConfirmButton: false,
+  });
 
-const AdminDashboard = ({ role, handleResetConfig }: { role: string | null, handleResetConfig: () => void }) => {
+const AdminDashboard = ({
+  role,
+  handleResetConfig,
+}: {
+  role: string | null;
+  handleResetConfig: () => void;
+}) => {
   const menuItems = [
     {
       href: '/admin/site',
@@ -55,19 +69,19 @@ const AdminDashboard = ({ role, handleResetConfig }: { role: string | null, hand
     <PageLayout>
       <div className="p-4 sm:p-6 sm:mt-8">
         <div className="flex items-center justify-between mb-8">
-            <div className='flex items-center gap-4'>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                    后台设置
-                </h1>
-                {role === 'owner' && (
-                  <button
-                    onClick={handleResetConfig}
-                    className='px-2 py-1 text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 border border-red-200 hover:border-red-300 dark:border-red-800 dark:hover:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors'
-                  >
-                    重置
-                  </button>
-                )}
-            </div>
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              后台设置
+            </h1>
+            {role === 'owner' && (
+              <button
+                onClick={handleResetConfig}
+                className="px-2 py-1 text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 border border-red-200 hover:border-red-300 dark:border-red-800 dark:hover:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+              >
+                重置
+              </button>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {menuItems.map((item) => (
@@ -133,7 +147,7 @@ function AdminDashboardClient() {
     if (!isConfirmed) return;
 
     try {
-      const response = await fetch(`/api/admin/reset`);
+      const response = await fetch(`/api/admin/reset`, { method: 'POST' });
       if (!response.ok) {
         throw new Error(`重置失败: ${response.status}`);
       }
@@ -144,18 +158,21 @@ function AdminDashboardClient() {
   };
 
   if (loading) {
-      return (
-        <PageLayout>
-            <div className="p-4 sm:p-6 sm:mt-8">
-                <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-8"></div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <div key={index} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
-                    ))}
-                </div>
-            </div>
-        </PageLayout>
-      )
+    return (
+      <PageLayout>
+        <div className="p-4 sm:p-6 sm:mt-8">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse"
+              />
+            ))}
+          </div>
+        </div>
+      </PageLayout>
+    );
   }
 
   return <AdminDashboard role={role} handleResetConfig={handleResetConfig} />;

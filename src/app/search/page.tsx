@@ -14,7 +14,6 @@ import {
 } from '@/lib/db.client';
 import { DoubanResult, SearchResult } from '@/lib/types';
 
-
 import PageLayout from '@/components/PageLayout';
 import SearchSuggestions from '@/components/SearchSuggestions';
 import VideoCard from '@/components/VideoCard';
@@ -37,16 +36,15 @@ const SearchPageClient: React.FC = () => {
   const [recommendedSearches, setRecommendedSearches] = useState<
     DoubanResult['list']
   >([]);
-  const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(true);
-  
+  const [isRecommendationsLoading, setIsRecommendationsLoading] =
+    useState(true);
+
   // 聚合后的结果（按标题和年份分组）
   const aggregatedResults = useMemo(() => {
     const map = new Map<string, SearchResult[]>();
     searchResults.forEach((item) => {
       // 使用 title + year 作为键进行聚合，year 必然存在，但依然兜底 'unknown'
-      const key = `${item.title.replaceAll(' ', '')}-${
-        item.year || 'unknown'
-      }`;
+      const key = `${item.title.replaceAll(' ', '')}-${item.year || 'unknown'}`;
       const arr = map.get(key) || [];
       arr.push(item);
       map.set(key, arr);
@@ -104,26 +102,15 @@ const SearchPageClient: React.FC = () => {
       }
     );
 
-    // 获取滚动位置的函数 - 专门针对 body 滚动
+    // 兼容不同浏览器的页面滚动元素。
     const getScrollTop = () => {
-      return document.body.scrollTop || 0;
+      return (
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
     };
-
-    // 使用 requestAnimationFrame 持续检测滚动位置
-    let isRunning = false;
-    const checkScrollPosition = () => {
-      if (!isRunning) return;
-
-      const scrollTop = getScrollTop();
-      const shouldShow = scrollTop > 300;
-      setShowBackToTop(shouldShow);
-
-      requestAnimationFrame(checkScrollPosition);
-    };
-
-    // 启动持续检测
-    isRunning = true;
-    checkScrollPosition();
 
     // 监听 body 元素的滚动事件
     const handleScroll = () => {
@@ -131,14 +118,13 @@ const SearchPageClient: React.FC = () => {
       setShowBackToTop(scrollTop > 300);
     };
 
-    document.body.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       unsubscribe();
-      isRunning = false; // 停止 requestAnimationFrame 循环
 
-      // 移除 body 滚动事件监听器
-      document.body.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -146,13 +132,17 @@ const SearchPageClient: React.FC = () => {
     // 获取推荐
     const fetchRecommended = async () => {
       try {
-        console.log('[SearchPageClient] Attempting to fetch recommendations from /api/recommendations');
+        console.log(
+          '[SearchPageClient] Attempting to fetch recommendations from /api/recommendations'
+        );
         const response = await fetch('/api/recommendations');
 
         const data = response.ok ? await response.json() : { list: [] };
 
         // The new API already returns a shuffled and sliced list of titles
-        setRecommendedSearches(data.list.map((title: string) => ({ id: title, title: title })));
+        setRecommendedSearches(
+          data.list.map((title: string) => ({ id: title, title: title }))
+        );
       } catch (error) {
         console.error('Failed to fetch recommended searches:', error);
       } finally {
@@ -226,7 +216,9 @@ const SearchPageClient: React.FC = () => {
             const filterKeywords = ['电影解说', '剧情解说', '预告片', '解说'];
             filteredResults = filteredResults.filter(
               (result) =>
-                !filterKeywords.some((keyword) => result.title.includes(keyword))
+                !filterKeywords.some((keyword) =>
+                  result.title.includes(keyword)
+                )
             );
 
             if (filteredResults.length > 0) {
@@ -383,13 +375,12 @@ const SearchPageClient: React.FC = () => {
                     </div>
                   )}
                 </div>
-
               </div>
               {isLoading ? (
                 <div className="justify-start grid grid-cols-3 gap-x-2 gap-y-14 sm:gap-y-20 px-0 sm:px-2 sm:grid-cols-[repeat(auto-fill,_minmax(11rem,_1fr))] sm:gap-x-8">
                   {Array.from({ length: 12 }).map((_, index) => (
-                    <VideoCardSkeleton 
-                      key={index} 
+                    <VideoCardSkeleton
+                      key={index}
                       className="w-full"
                       showYear={true}
                     />
@@ -401,20 +392,20 @@ const SearchPageClient: React.FC = () => {
                   className="justify-start grid grid-cols-3 gap-x-2 gap-y-14 sm:gap-y-20 px-0 sm:px-2 sm:grid-cols-[repeat(auto-fill,_minmax(11rem,_1fr))] sm:gap-x-8"
                 >
                   {aggregatedResults.map(([mapKey, group]) => {
-                        return (
-                          <div key={`agg-${mapKey}`} className="w-full">
-                            <VideoCard
-                              from="search"
-                              items={group}
-                              query={
-                                searchQuery.trim() !== group[0].title
-                                  ? searchQuery.trim()
-                                  : ''
-                              }
-                            />
-                          </div>
-                        );
-                      })}
+                    return (
+                      <div key={`agg-${mapKey}`} className="w-full">
+                        <VideoCard
+                          from="search"
+                          items={group}
+                          query={
+                            searchQuery.trim() !== group[0].title
+                              ? searchQuery.trim()
+                              : ''
+                          }
+                        />
+                      </div>
+                    );
+                  })}
                   {searchResults.length === 0 && !isStreaming && (
                     <div className="col-span-full text-center text-gray-500 py-8 dark:text-gray-400">
                       未找到相关结果
@@ -427,7 +418,9 @@ const SearchPageClient: React.FC = () => {
             <>
               {searchHistory.length > 0 && (
                 <section className="mb-12">
-                  <h2 className="mb-4 text-xl font-bold text-gray-800 text-left dark:text-gray-200 flex items-center"> {/* Added flex items-center */}
+                  <h2 className="mb-4 text-xl font-bold text-gray-800 text-left dark:text-gray-200 flex items-center">
+                    {' '}
+                    {/* Added flex items-center */}
                     搜索历史
                     {searchHistory.length > 0 && (
                       <button
@@ -438,7 +431,7 @@ const SearchPageClient: React.FC = () => {
                       >
                         <Trash2
                           size={20}
-                          className='text-gray-500 dark:text-gray-400 transition-all duration-300 ease-out hover:stroke-red-500 hover:scale-[1.1]'
+                          className="text-gray-500 dark:text-gray-400 transition-all duration-300 ease-out hover:stroke-red-500 hover:scale-[1.1]"
                         />
                       </button>
                     )}

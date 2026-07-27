@@ -1,7 +1,7 @@
 ---
 ## 🎬  JoyFlix观影平台（基于NEXT.JS）
 <p align="center">
-  <img src="https://github.com/jeffernn/LibreTV-MoonTV-Mac-Objective-C/blob/main/img/icon.png?raw=true" alt="JeffernTV Logo" width="120" height="120">
+<img src="https://github.com/jeffernn/LibreTV-MoonTV-Mac-Objective-C/blob/main/img/icon.png?raw=true" alt="JeffernTV Logo" width="120" height="120">
 </p>
 
 > 🎬 JoyFlix观影平台是一款基于 MoonTV二次开发完全重构（包括底层后端及其前端UI及其交互逻辑）的影视播放平台
@@ -11,7 +11,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-000?logo=nextdotjs)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38bdf8?logo=tailwindcss)
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.x-3178c6?logo=typescript)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey)
 ![Docker Ready](https://img.shields.io/badge/Docker-ready-blue?logo=docker)
 
 </div>
@@ -37,29 +37,27 @@
 - 🎉欢迎大佬加入项目开发，有想贡献的佬佬们可以在issue中/TG群与我联系
 
 <details>
-  <summary>点击查看项目图</summary>
-  <img width="1680" height="920" alt="image" src="https://github.com/user-attachments/assets/5d120f71-b198-4e4f-833f-e26e349a32f3" />
-  <img width="1680" height="925" alt="image" src="https://github.com/user-attachments/assets/6ee1ae0d-9994-4c24-8961-d0a3c7b6cd5c" />
-  <img width="1680" height="926" alt="image" src="https://github.com/user-attachments/assets/d4c7b0ab-249f-4667-b418-1548cb069076" />
-  <img width="1680" height="923" alt="image" src="https://github.com/user-attachments/assets/0875d4b1-5280-4d2f-8bc8-5c1d5b65c0e3" />
-  <img width="322" height="269" alt="image" src="https://github.com/user-attachments/assets/e672b701-ed02-45e5-9235-eca9a3fb409b" />
-  <img width="628" height="510" alt="image" src="https://github.com/user-attachments/assets/7fd61d68-a370-430f-b803-11f40e95b7b8" />
-  <img width="1680" height="917" alt="image" src="https://github.com/user-attachments/assets/0e9af9a7-5e8f-4a8d-a380-6b60545dfd97" />
-  <img width="1680" height="921" alt="image" src="https://github.com/user-attachments/assets/e34a1536-9265-4523-8b80-60c5cbd4ece7" />
-  <img width="1680" height="924" alt="image" src="https://github.com/user-attachments/assets/146bbd6d-936d-4193-a6d6-1c0e2df8614d" />
-  <img width="1680" height="929" alt="image" src="https://github.com/user-attachments/assets/a0849da2-93a0-4a6e-95d4-7a06db3da8e4" />
-  <img width="1680" height="923" alt="image" src="https://github.com/user-attachments/assets/b034ba1e-e904-4844-bcd3-ed3ff15ac620" />
-  <img width="1680" height="930" alt="image" src="https://github.com/user-attachments/assets/cfc792cf-1401-4058-ba21-82455e161fa7" />
-  <img width="1680" height="875" alt="image" src="https://github.com/user-attachments/assets/f2e918c2-43f7-4d32-974a-b5aaad602ba9" />
-  <img width="1680" height="659" alt="image" src="https://github.com/user-attachments/assets/222c5621-8f69-47d0-bc21-24429a7820f3" />
-  <img width="1679" height="878" alt="image" src="https://github.com/user-attachments/assets/8d0b98ee-3dc0-4433-97ef-770303f6f54a" />
-  <img width="1680" height="881" alt="image" src="https://github.com/user-attachments/assets/6c069501-8949-444f-9b29-54b1608f9d70" />
-  <img width="1680" height="926" alt="image" src="https://github.com/user-attachments/assets/cbac7ff6-be4c-4eef-a77b-2271c83d054d" />
-  <img width="590" height="1278" alt="IMG_0120" src="https://github.com/user-attachments/assets/bfc1c2b1-933f-4745-959d-3a1e4dbc12f8" />
+<summary>点击查看项目图</summary>
+<img width="1680" height="920" alt="image" src="https://github.com/user-attachments/assets/5d120f71-b198-4e4f-833f-e26e349a32f3" />
+<img width="1680" height="925" alt="image" src="https://github.com/user-attachments/assets/6ee1ae0d-9994-4c24-8961-d0a3c7b6cd5c" />
+<img width="1680" height="926" alt="image" src="https://github.com/user-attachments/assets/d4c7b0ab-249f-4667-b418-1548cb069076" />
+<img width="1680" height="923" alt="image" src="https://github.com/user-attachments/assets/0875d4b1-5280-4d2f-8bc8-5c1d5b65c0e3" />
+<img width="322" height="269" alt="image" src="https://github.com/user-attachments/assets/e672b701-ed02-45e5-9235-eca9a3fb409b" />
+<img width="628" height="510" alt="image" src="https://github.com/user-attachments/assets/7fd61d68-a370-430f-b803-11f40e95b7b8" />
+<img width="1680" height="917" alt="image" src="https://github.com/user-attachments/assets/0e9af9a7-5e8f-4a8d-a380-6b60545dfd97" />
+<img width="1680" height="921" alt="image" src="https://github.com/user-attachments/assets/e34a1536-9265-4523-8b80-60c5cbd4ece7" />
+<img width="1680" height="924" alt="image" src="https://github.com/user-attachments/assets/146bbd6d-936d-4193-a6d6-1c0e2df8614d" />
+<img width="1680" height="929" alt="image" src="https://github.com/user-attachments/assets/a0849da2-93a0-4a6e-95d4-7a06db3da8e4" />
+<img width="1680" height="923" alt="image" src="https://github.com/user-attachments/assets/b034ba1e-e904-4844-bcd3-ed3ff15ac620" />
+<img width="1680" height="930" alt="image" src="https://github.com/user-attachments/assets/cfc792cf-1401-4058-ba21-82455e161fa7" />
+<img width="1680" height="875" alt="image" src="https://github.com/user-attachments/assets/f2e918c2-43f7-4d32-974a-b5aaad602ba9" />
+<img width="1680" height="659" alt="image" src="https://github.com/user-attachments/assets/222c5621-8f69-47d0-bc21-24429a7820f3" />
+<img width="1679" height="878" alt="image" src="https://github.com/user-attachments/assets/8d0b98ee-3dc0-4433-97ef-770303f6f54a" />
+<img width="1680" height="881" alt="image" src="https://github.com/user-attachments/assets/6c069501-8949-444f-9b29-54b1608f9d70" />
+<img width="1680" height="926" alt="image" src="https://github.com/user-attachments/assets/cbac7ff6-be4c-4eef-a77b-2271c83d054d" />
+<img width="590" height="1278" alt="IMG_0120" src="https://github.com/user-attachments/assets/bfc1c2b1-933f-4745-959d-3a1e4dbc12f8" />
 </details>
-
 ### 请不要在 B站、小红书、微信公众号、抖音、今日头条或其他中国大陆社交平台发布视频或文章宣传本项目，不授权任何“科技周刊/月刊”类项目或站点收录本项目。
-
 ---
 
 ## 技术栈
@@ -70,7 +68,7 @@
 | UI & 样式 | [Tailwind&nbsp;CSS 3](https://tailwindcss.com/)                                                       |
 | 语言      | TypeScript 4                                                                                          |
 | 播放器    | [ArtPlayer](https://github.com/zhw2590582/ArtPlayer) · [HLS.js](https://github.com/video-dev/hls.js/) |
-| 部署      | Docker · Vercel                                                                                |
+| 部署      | Docker · Vercel                                                                                       |
 
 ## 部署
 
@@ -78,11 +76,12 @@
 
 存储支持矩阵
 
-|                   | Docker | Vercel | Netlify |
-| :---------------: | :----: | :----: | :-----: |
-|   localstorage    |   ✅   |   ✅   |   ✅    |
-|    原生 redis     |   ✅   |        |         |
-|   Upstash Redis   |      |   ✅   |   ✅    |
+|               | Docker | Vercel | Netlify |
+| :-----------: | :----: | :----: | :-----: |
+| localstorage  |   ✅   |   ✅   |   ✅    |
+|  原生 redis   |   ✅   |        |         |
+| Upstash Redis |        |   ✅   |   ✅    |
+
 ✅：经测试支持
 
 除 localstorage 方式外，其他方式都支持多账户、记录同步和管理页面
@@ -135,7 +134,7 @@
 
 #### 普通部署（localstorage）
 
-1. Image  Name 填写 ghcr.io/jeffernn/joyflix@sha256:453fd835de93538a880dce307680da0f20d805c575c6ddfe09557f7018a2a877
+1. Image Name 填写 ghcr.io/jeffernn/joyflix@sha256:453fd835de93538a880dce307680da0f20d805c575c6ddfe09557f7018a2a877
 2. 根据以下环境变量要求填写环境变量
 
 部署完成后即可通过分配的域名访问，也可以绑定自定义域名。
@@ -148,7 +147,6 @@
 3. 返回你的项目，环境变量 **UPSTASH_URL 和 UPSTASH_TOKEN**，值为第二步复制的 endpoint 和 token
 4. 设置环境变量 NEXT_PUBLIC_STORAGE_TYPE，值为 **upstash**；设置 USERNAME 和 PASSWORD 作为超管账号
 
-
 ### Docker 部署
 
 ### Redis 版本（推荐，多账户数据隔离，跨设备同步）
@@ -160,7 +158,7 @@ services:
     container_name: joyflix-core
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "3000:3000"
     environment:
       - USERNAME=admin
       - PASSWORD=admin_password
@@ -187,31 +185,25 @@ networks:
     driver: bridge
 ```
 
-
 ## 环境变量
 
-| 变量                                | 说明                                         | 可选值                           | 默认值                                                                                                                     |
-| ----------------------------------- | -------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| USERNAME                            | 非 localstorage 部署时的管理员账号           | 任意字符串                       | （空）                                                                                                                     |
-| PASSWORD                            | 非 localstorage 部署时为管理员密码           | 任意字符串                       | （空）                                                                                                                     |
-| NEXT_PUBLIC_SITE_NAME               | 站点名称                                     | 任意字符串                       | JoyFlix                                                                                                                     |
-| ANNOUNCEMENT                        | 站点公告                                     | 任意字符串                       | 请勿分享 ʕ •ᴥ•ʔ～ |
-| NEXT_PUBLIC_STORAGE_TYPE            | 播放记录/收藏的存储方式                      | localstorage、redis、d1、upstash | localstorage                                                                                                               |
-| REDIS_URL                           | redis 连接 url                               | 连接 url                         | 空                                                                                                                         |
-| UPSTASH_URL                         | upstash redis 连接 url                       | 连接 url                         | 空                                                                                                                         |
-| UPSTASH_TOKEN                       | upstash redis 连接 token                     | 连接 token                       | 空                                                                                                                         |
-| NEXT_PUBLIC_SEARCH_MAX_PAGE         | 搜索接口可拉取的最大页数                     | 1-50                             | 5                                                                                                                          |
-| NEXT_PUBLIC_DOUBAN_PROXY_TYPE       | 豆瓣数据源请求方式                           | 见下方                           | direct                                                                                                                     |
-| NEXT_PUBLIC_DOUBAN_PROXY            | 自定义豆瓣数据代理 URL                       | url prefix                       | (空)                                                                                                                       |
-| NEXT_PUBLIC_DOUBAN_IMAGE_PROXY_TYPE | 豆瓣图片代理类型                             | 见下方                           | direct                                                                                                                     |
-| NEXT_PUBLIC_DOUBAN_IMAGE_PROXY      | 自定义豆瓣图片代理 URL                       | url prefix                       | (空)                                                                                                                       |
-| NEXT_PUBLIC_BASE_URL                | 搜索推荐数据库获取值接口URL                     | https://xxx.com                 | 空    
-                                                                                                
+| 变量                                | 说明                                                 | 可选值                           | 默认值                               |
+| ----------------------------------- | ---------------------------------------------------- | -------------------------------- | ------------------------------------ |
+| USERNAME                            | 非 localstorage 部署时的管理员账号                   | 任意字符串                       | （空）                               |
+| PASSWORD                            | 站点登录密码；非 localstorage 模式也作为会话签章密钥 | 高强度随机字符串                 | （空）                               |
+| CRON_SECRET                         | Redis/Upstash 定时刷新接口的 Vercel 验证密钥         | 高强度随机字符串                 | （空；非 localstorage 模式必须设置） |
+| NEXT_PUBLIC_SITE_NAME               | 站点名称                                             | 任意字符串                       | JoyFlix                              |
+| ANNOUNCEMENT                        | 站点公告                                             | 任意字符串                       | 请勿分享 ʕ •ᴥ•ʔ ～                   |
+| NEXT_PUBLIC_STORAGE_TYPE            | 播放记录/收藏的存储方式                              | localstorage、redis、d1、upstash | localstorage                         |
+| REDIS_URL                           | redis 连接 url                                       | 连接 url                         | 空                                   |
+| UPSTASH_URL                         | upstash redis 连接 url                               | 连接 url                         | 空                                   |
+| UPSTASH_TOKEN                       | upstash redis 连接 token                             | 连接 token                       | 空                                   |
+| NEXT_PUBLIC_SEARCH_MAX_PAGE         | 搜索接口可拉取的最大页数                             | 1-50                             | 5                                    |
+| NEXT_PUBLIC_DOUBAN_PROXY_TYPE       | 豆瓣数据源请求方式                                   | 见下方                           | direct                               |
+| NEXT_PUBLIC_DOUBAN_PROXY            | 自定义豆瓣数据代理 URL                               | url prefix                       | (空)                                 |
+| NEXT_PUBLIC_DOUBAN_IMAGE_PROXY_TYPE | 豆瓣图片代理类型                                     | 见下方                           | direct                               |
+| NEXT_PUBLIC_DOUBAN_IMAGE_PROXY      | 自定义豆瓣图片代理 URL                               | url prefix                       | (空)                                 |
 
-
-
-                                                                                                 
-                        
 NEXT_PUBLIC_DOUBAN_PROXY_TYPE 选项解释：
 
 - direct: 由服务器直接请求豆瓣源站
@@ -277,11 +269,15 @@ custom_category 支持的自定义分类如下：
 
 支持标准的苹果 CMS V10 API 格式。
 
-
 ## TV 使用
 
-配合 [OrionTV](https://github.com/zimplexing/OrionTV) 在 TV 上使用
+配合 [OrionTV](https://github.com/orion-lib/OrionTV) 在 TV 上使用。
 
+OrionTV 1.3.13 在启用 `PASSWORD` 的 Joyflix 实例上存在 Cookie 未随请求发送
+的问题。可直接下载已验证的
+[OrionTV 1.3.13 JoyFlix auth fix 1](https://github.com/UOE73/OrionTV/releases/tag/v1.3.13-joyflix.1)，
+原因、验证结果和客户端补丁请参阅
+[OrionTV 认证问题](docs/oriontv-auth.md)。
 
 ## 技术
 
@@ -291,13 +287,13 @@ custom_category 支持的自定义分类如下：
 
 ---
 
-### ✨✨✨福利
+### ✨✨✨ 福利
 
 - 啦啦～
-- 看到这里啦！说明你认真熟读了README，我必须送你一些专属福利～
-- ⬇️⬇️Emby客户端（macos/ipados/ios）高级订阅会员破解脚本⬇️⬇️
+- 看到这里啦！说明你认真熟读了 README，我必须送你一些专属福利～
+- ⬇️⬇️Emby 客户端（macos/ipados/ios）高级订阅会员破解脚本 ⬇️⬇️
 - https://github.com/jeffernn/jeffern-qx/blob/main/%E9%87%8D%E5%86%99/Embypremiere/Embypremiere.conf
-- 配合Quantumult x使用，懂得都懂！切勿外传哦～
+- 配合 Quantumult x 使用，懂得都懂！切勿外传哦～
 
 ---
 
@@ -312,7 +308,6 @@ custom_category 支持的自定义分类如下：
 - 项目开发者不对用户的使用行为承担任何法律责任
 - 本项目不在中国大陆地区提供服务。如有该项目在向中国大陆地区提供服务，属个人行为。在该地区使用所产生的法律风险及责任，属于用户个人行为，与本项目无关，须自行承担全部责任。特此声明
 - 如因公开分享导致的任何法律问题，用户需自行承担责任
-
 
 ---
 
@@ -333,13 +328,11 @@ JoyFlix 仅作为视频搜索工具，不存储、上传或分发任何视频内
 ---
 
 ## 🌟 Star History
+
 [![Stargazers over time](https://starchart.cc/jeffernn/joyflix.svg?variant=adaptive)](https://starchart.cc/jeffernn/joyflix)
-
-
 
 ---
 
 <p align="center">
   <b>⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！</b>
 </p>
-

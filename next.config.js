@@ -7,8 +7,6 @@ const nextConfig = {
   },
 
   reactStrictMode: false,
-  swcMinify: true,
-
   // Uncoment to add domain whitelist
   images: {
     unoptimized: true,
@@ -64,10 +62,12 @@ const nextConfig = {
   },
 };
 
-const withPWA = require('next-pwa')({
+const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
-  skipWaiting: true,
+  workboxOptions: {
+    skipWaiting: true,
+  },
 });
 
 module.exports = withPWA(nextConfig);

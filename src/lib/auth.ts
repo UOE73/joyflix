@@ -1,72 +1,158 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// 从cookie获取认证信息 (服务端使用)
-export function getAuthInfoFromCookie(request: NextRequest): {
-  password?: string;
+export type AuthRole = 'owner' | 'admin' | 'user';
+
+export interface AuthInfo {
   username?: string;
+  role: AuthRole;
   signature?: string;
   timestamp?: number;
-} | null {
-  const authCookie = request.cookies.get('auth');
+}
 
-  if (!authCookie) {
-    return null;
-  }
+const BROWSER_AUTH_KEY = 'joyflixAuthInfo';
+export const AUTH_SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
+function isAuthRole(value: unknown): value is AuthRole {
+  return value === 'owner' || value === 'admin' || value === 'user';
+}
+
+function parseAuthInfo(value: string): AuthInfo | null {
   try {
-    const decoded = decodeURIComponent(authCookie.value);
-    const authData = JSON.parse(decoded);
-    return authData;
-  } catch (error) {
+    const parsed = JSON.parse(value) as Partial<AuthInfo>;
+    if (!isAuthRole(parsed.role)) return null;
+    if (parsed.username !== undefined && typeof parsed.username !== 'string') {
+      return null;
+    }
+    if (
+      parsed.signature !== undefined &&
+      typeof parsed.signature !== 'string'
+    ) {
+      return null;
+    }
+    if (
+      parsed.timestamp !== undefined &&
+      typeof parsed.timestamp !== 'number'
+    ) {
+      return null;
+    }
+    return parsed as AuthInfo;
+  } catch {
     return null;
   }
 }
 
-// 从cookie获取认证信息 (客户端使用)
-export function getAuthInfoFromBrowserCookie(): {
-  password?: string;
-  username?: string;
-  signature?: string;
-  timestamp?: number;
-  role?: 'owner' | 'admin' | 'user';
-} | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
+// 從 HttpOnly Cookie 取得認證資訊（伺服器端使用）。
+export function getAuthInfoFromCookie(request: NextRequest): AuthInfo | null {
+  const authCookie = request.cookies.get('auth');
+  if (!authCookie) return null;
 
   try {
-    // 解析 document.cookie
-    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-      const trimmed = cookie.trim();
-      const firstEqualIndex = trimmed.indexOf('=');
-
-      if (firstEqualIndex > 0) {
-        const key = trimmed.substring(0, firstEqualIndex);
-        const value = trimmed.substring(firstEqualIndex + 1);
-        if (key && value) {
-          acc[key] = value;
-        }
-      }
-
-      return acc;
-    }, {} as Record<string, string>);
-
-    const authCookie = cookies['auth'];
-    if (!authCookie) {
-      return null;
-    }
-
-    // 处理可能的双重编码
-    let decoded = decodeURIComponent(authCookie);
-
-    // 如果解码后仍然包含 %，说明是双重编码，需要再次解码
-    if (decoded.includes('%')) {
-      decoded = decodeURIComponent(decoded);
-    }
-
-    const authData = JSON.parse(decoded);
-    return authData;
-  } catch (error) {
+    return parseAuthInfo(decodeURIComponent(authCookie.value));
+  } catch {
     return null;
   }
+}
+
+export function getAuthSignaturePayload(
+  authInfo: Pick<AuthInfo, 'username' | 'role' | 'timestamp'>
+): string {
+  return [
+    'v2',
+    authInfo.username || '',
+    authInfo.role,
+    String(authInfo.timestamp || 0),
+  ].join(':');
+}
+
+export async function createAuthSignature(
+  payload: string,
+  secret: string
+): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(payload)
+  );
+
+  return Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export async function verifyAuthSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): Promise<boolean> {
+  if (!/^[a-f0-9]{64}$/i.test(signature)) return false;
+
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    );
+    const signatureBytes = new Uint8Array(
+      signature.match(/.{2}/g)!.map((byte) => parseInt(byte, 16))
+    );
+
+    return crypto.subtle.verify(
+      'HMAC',
+      key,
+      signatureBytes,
+      encoder.encode(payload)
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function isAuthSessionFresh(
+  timestamp: number | undefined,
+  now = Date.now()
+): boolean {
+  if (!timestamp) return false;
+  const age = now - timestamp;
+  return age >= -5 * 60 * 1000 && age <= AUTH_SESSION_MAX_AGE_MS;
+}
+
+export function isSecureRequest(request: NextRequest): boolean {
+  const forwardedProto = request.headers.get('x-forwarded-proto');
+  return forwardedProto === 'https' || request.nextUrl.protocol === 'https:';
+}
+
+// 客戶端只保存顯示及快取分區所需的非敏感身份資料。
+export function getAuthInfoFromBrowserCookie(): AuthInfo | null {
+  if (typeof window === 'undefined') return null;
+  const stored = localStorage.getItem(BROWSER_AUTH_KEY);
+  return stored ? parseAuthInfo(stored) : null;
+}
+
+export function setBrowserAuthInfo(
+  authInfo: Pick<AuthInfo, 'username' | 'role'>
+): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(
+    BROWSER_AUTH_KEY,
+    JSON.stringify({
+      ...(authInfo.username ? { username: authInfo.username } : {}),
+      role: authInfo.role,
+    })
+  );
+}
+
+export function clearBrowserAuthInfo(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(BROWSER_AUTH_KEY);
 }

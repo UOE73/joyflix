@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/exhaustive-deps, no-console */
 
 'use client';
@@ -23,7 +22,6 @@ import {
 import { Favorite, SearchResult } from '@/lib/types';
 import { processImageUrl } from '@/lib/utils';
 import { useIsTablet } from '@/lib/useIsTablet';
-
 
 function DetailPageClient() {
   const [instanceId] = useState(() => Date.now().toString());
@@ -54,11 +52,15 @@ function DetailPageClient() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000); // 6秒超时
 
-      const response = await fetch(`/api/douban/movie/${id}`, { signal: controller.signal });
+      const response = await fetch(`/api/douban/movie/${id}`, {
+        signal: controller.signal,
+      });
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn(`Douban movie API error for doubanId ${id}: ${response.statusText}`);
+        console.warn(
+          `Douban movie API error for doubanId ${id}: ${response.statusText}`
+        );
         return null;
       }
 
@@ -68,7 +70,10 @@ function DetailPageClient() {
       if (error.name === 'AbortError') {
         console.warn(`Douban movie API request timed out for doubanId ${id}`);
       } else {
-        console.error(`Error fetching from Douban movie API for doubanId ${id}:`, error);
+        console.error(
+          `Error fetching from Douban movie API for doubanId ${id}:`,
+          error
+        );
       }
       return null;
     }
@@ -79,11 +84,15 @@ function DetailPageClient() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000); // 6秒超时
 
-      const response = await fetch(`/api/wmdb?id=${id}`, { signal: controller.signal });
+      const response = await fetch(`/api/wmdb?id=${id}`, {
+        signal: controller.signal,
+      });
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.warn(`WMDB API proxy error for doubanId ${id}: ${response.statusText}`);
+        console.warn(
+          `WMDB API proxy error for doubanId ${id}: ${response.statusText}`
+        );
         return null;
       }
 
@@ -93,13 +102,14 @@ function DetailPageClient() {
       if (error.name === 'AbortError') {
         console.warn(`WMDB API proxy request timed out for doubanId ${id}`);
       } else {
-        console.error(`Error fetching from WMDB API proxy for doubanId ${id}:`, error);
+        console.error(
+          `Error fetching from WMDB API proxy for doubanId ${id}:`,
+          error
+        );
       }
       return null;
     }
   };
-
-
 
   const source = searchParams.get('source');
   const id = searchParams.get('id');
@@ -112,7 +122,8 @@ function DetailPageClient() {
   // 使用 searchParams 中可用的任何数据初始化详情
   const [detail, setDetail] = useState<SearchResult | null>(() => {
     // 如果 initialPoster 可用，则优先使用，并初始化其他字段
-    if (source || id || title) { // 检查是否存在任何基本参数以初始化详情
+    if (source || id || title) {
+      // 检查是否存在任何基本参数以初始化详情
       return {
         id: id || '',
         source: source || '',
@@ -134,8 +145,11 @@ function DetailPageClient() {
 
   const [isFavorited, setIsFavorited] = useState(false);
   const [isFavoriting, setIsFavoriting] = useState(false); // 在异步操作期间禁用按钮时保留此状态
-  const [allFavorites, setAllFavorites] = useState<Record<string, Favorite>>({});
-  const [showTrailerConfirmDialog, setShowTrailerConfirmDialog] = useState(false);
+  const [allFavorites, setAllFavorites] = useState<Record<string, Favorite>>(
+    {}
+  );
+  const [showTrailerConfirmDialog, setShowTrailerConfirmDialog] =
+    useState(false);
   const [showNoTrailerDialog, setShowNoTrailerDialog] = useState(false);
 
   const handleConfirmTrailer = () => {
@@ -205,7 +219,12 @@ function DetailPageClient() {
               source: source || '',
               title: title || doubanData.title || '',
               year: doubanData.year || year || undefined,
-              poster: initialPoster || (doubanData.recommendations && doubanData.recommendations[0] && doubanData.recommendations[0].likeposter) || '',
+              poster:
+                initialPoster ||
+                (doubanData.recommendations &&
+                  doubanData.recommendations[0] &&
+                  doubanData.recommendations[0].likeposter) ||
+                '',
               class: doubanData.genre || initialClass || undefined,
               desc: doubanData.description || initialDesc || undefined,
               country: doubanData.country || undefined,
@@ -222,11 +241,10 @@ function DetailPageClient() {
 
         if (!doubanDataFetched && doubanId) {
           const wmdbData = await fetchWMDBData(doubanId);
-          
+
           if (wmdbData && wmdbData.data && wmdbData.data.length > 0) {
             const movieData = wmdbData.data[0]; // 假设第一项是相关的
-            
-            
+
             videoDetailToSet = {
               id: id || '', // 保留现有ID或为空
               source: source || '', // 保留现有来源或为空
@@ -274,7 +292,9 @@ function DetailPageClient() {
           // 场景2：我们只有一个标题。搜索它。
           else if (title) {
             const searchResponse = await fetch(
-              `/api/search/stream?q=${encodeURIComponent(title)}${year ? `&year=${year}` : ''}`
+              `/api/search/stream?q=${encodeURIComponent(title)}${
+                year ? `&year=${year}` : ''
+              }`
             );
             if (!searchResponse.ok) {
               throw new Error(`搜索视频源失败: ${searchResponse.statusText}`);
@@ -285,14 +305,15 @@ function DetailPageClient() {
               throw new Error('未找到任何相关的视频源');
             }
 
-            videoDetailToSet = foundVideoDetail ? { ...foundVideoDetail } : null;
+            videoDetailToSet = foundVideoDetail
+              ? { ...foundVideoDetail }
+              : null;
 
             // 如果提供了初始海报，则保留它
             if (initialPoster && videoDetailToSet) {
               videoDetailToSet.poster = initialPoster;
             }
-          }
-          else {
+          } else {
             // 没有source/id，也没有标题。
             // 组件已经处理了detail为null的情况。
             return;
@@ -303,7 +324,7 @@ function DetailPageClient() {
           throw new Error('无法获取视频详情');
         }
 
-        setDetail(prevDetail => {
+        setDetail((prevDetail) => {
           if (!videoDetailToSet) {
             return prevDetail; // 由于之前的检查，这不应该发生，但为了安全起见
           }
@@ -311,7 +332,8 @@ function DetailPageClient() {
           // 基于prevDetail或默认SearchResult结构初始化newDetail
           const newDetail: SearchResult = prevDetail
             ? { ...prevDetail }
-            : { // 如果prevDetail为null，则为默认SearchResult结构
+            : {
+                // 如果prevDetail为null，则为默认SearchResult结构
                 id: '',
                 source: '',
                 title: '',
@@ -329,20 +351,35 @@ function DetailPageClient() {
           newDetail.id = videoDetailToSet.id || newDetail.id;
           newDetail.source = videoDetailToSet.source || newDetail.source;
           newDetail.title = videoDetailToSet.title || newDetail.title;
-          newDetail.source_name = videoDetailToSet.source_name || newDetail.source_name;
+          newDetail.source_name =
+            videoDetailToSet.source_name || newDetail.source_name;
 
           // 仅当prevDetail中“缺少”可选字段时才会有条件地更新它们
           // 对于字符串，“缺少”表示null、undefined或空字符串
-          if (!newDetail.year && videoDetailToSet.year) newDetail.year = videoDetailToSet.year;
-          if (!newDetail.poster && videoDetailToSet.poster) newDetail.poster = videoDetailToSet.poster;
-          if (!newDetail.class && videoDetailToSet.class) newDetail.class = videoDetailToSet.class;
-          if (!newDetail.desc && videoDetailToSet.desc) newDetail.desc = videoDetailToSet.desc;
-          if (!newDetail.country && videoDetailToSet.country) newDetail.country = videoDetailToSet.country;
-          if ((!newDetail.recommendations || newDetail.recommendations.length === 0) && videoDetailToSet.recommendations && videoDetailToSet.recommendations.length > 0) {
+          if (!newDetail.year && videoDetailToSet.year)
+            newDetail.year = videoDetailToSet.year;
+          if (!newDetail.poster && videoDetailToSet.poster)
+            newDetail.poster = videoDetailToSet.poster;
+          if (!newDetail.class && videoDetailToSet.class)
+            newDetail.class = videoDetailToSet.class;
+          if (!newDetail.desc && videoDetailToSet.desc)
+            newDetail.desc = videoDetailToSet.desc;
+          if (!newDetail.country && videoDetailToSet.country)
+            newDetail.country = videoDetailToSet.country;
+          if (
+            (!newDetail.recommendations ||
+              newDetail.recommendations.length === 0) &&
+            videoDetailToSet.recommendations &&
+            videoDetailToSet.recommendations.length > 0
+          ) {
             newDetail.recommendations = videoDetailToSet.recommendations;
           }
           // 添加此块
-          if ((!newDetail.celebrities || newDetail.celebrities.length === 0) && videoDetailToSet.celebrities && videoDetailToSet.celebrities.length > 0) {
+          if (
+            (!newDetail.celebrities || newDetail.celebrities.length === 0) &&
+            videoDetailToSet.celebrities &&
+            videoDetailToSet.celebrities.length > 0
+          ) {
             newDetail.celebrities = videoDetailToSet.celebrities;
           }
           if (!newDetail.trailerUrl && videoDetailToSet.trailerUrl) {
@@ -350,10 +387,19 @@ function DetailPageClient() {
           }
 
           // 对于数组，“缺少”表示null、undefined或空数组
-          if ((!newDetail.episodes || newDetail.episodes.length === 0) && videoDetailToSet.episodes && videoDetailToSet.episodes.length > 0) {
+          if (
+            (!newDetail.episodes || newDetail.episodes.length === 0) &&
+            videoDetailToSet.episodes &&
+            videoDetailToSet.episodes.length > 0
+          ) {
             newDetail.episodes = videoDetailToSet.episodes;
           }
-          if ((!newDetail.episodes_titles || newDetail.episodes_titles.length === 0) && videoDetailToSet.episodes_titles && videoDetailToSet.episodes_titles.length > 0) {
+          if (
+            (!newDetail.episodes_titles ||
+              newDetail.episodes_titles.length === 0) &&
+            videoDetailToSet.episodes_titles &&
+            videoDetailToSet.episodes_titles.length > 0
+          ) {
             newDetail.episodes_titles = videoDetailToSet.episodes_titles;
           }
 
@@ -370,10 +416,6 @@ function DetailPageClient() {
     fetchData();
   }, [source, id, title, year, initialPoster, doubanId]);
 
-  
-
-  
-
   const handlePlay = () => {
     if (!detail) return;
 
@@ -387,7 +429,7 @@ function DetailPageClient() {
       if (detail.year) {
         playParams.set('year', detail.year);
       }
-      
+
       const stitle = searchParams.get('stitle');
       if (stitle) {
         playParams.set('stitle', stitle);
@@ -416,7 +458,9 @@ function DetailPageClient() {
       if (isFavorited) {
         // 项目已被收藏，因此取消收藏
         // 按标题查找确切的收藏条目，然后使用其键删除
-        const favoritedEntryKey = Object.keys(allFavorites).find(key => allFavorites[key].title === detail.title);
+        const favoritedEntryKey = Object.keys(allFavorites).find(
+          (key) => allFavorites[key].title === detail.title
+        );
 
         if (favoritedEntryKey) {
           // 键的格式为 "source+id"
@@ -450,16 +494,13 @@ function DetailPageClient() {
     }
   }, [detail, isFavorited, allFavorites]);
 
-  
-
   if (error) {
     return (
       <PageLayout activePath={pathname}>
-        <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-
-          <div className='flex items-center justify-center min-h-[calc(100vh-200px)]'>
-            <div className='text-center text-red-500'>
-              <h2 className='text-2xl font-bold mb-2'>加载失败</h2>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+            <div className="text-center text-red-500">
+              <h2 className="text-2xl font-bold mb-2">加载失败</h2>
               <p>{error}</p>
             </div>
           </div>
@@ -472,11 +513,10 @@ function DetailPageClient() {
   if (!detail && !isLoadingApi) {
     return (
       <PageLayout activePath={pathname}>
-        <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-
-          <div className='flex items-center justify-center min-h-[calc(100vh-200px)]'>
-            <div className='text-center text-gray-500 dark:text-gray-400'>
-              <h2 className='text-2xl font-bold mb-2'>未找到视频详情</h2>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+            <div className="text-center text-gray-500 dark:text-gray-400">
+              <h2 className="text-2xl font-bold mb-2">未找到视频详情</h2>
               <p>请检查您的查询参数。</p>
             </div>
           </div>
@@ -487,30 +527,42 @@ function DetailPageClient() {
 
   return (
     <PageLayout activePath={pathname}>
-      <div className={`max-w-[96%] mx-auto px-4 sm:px-10 lg:px-8 pb-8 relative ${isTablet ? 'pt-14' : ''} ${isMobile ? 'pt-4' : 'pt-8'}`}>
-        
-        <div className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 ${!isMobile ? 'pt-10' : 'pt-0'}`}>
-          <div className='md:col-span-1 lg:col-span-1'>
-            <div className='relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-2xl'>
+      <div
+        className={`max-w-[96%] mx-auto px-4 sm:px-10 lg:px-8 pb-8 relative ${
+          isTablet ? 'pt-14' : ''
+        } ${isMobile ? 'pt-4' : 'pt-8'}`}
+      >
+        <div
+          className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 ${
+            !isMobile ? 'pt-10' : 'pt-0'
+          }`}
+        >
+          <div className="md:col-span-1 lg:col-span-1">
+            <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-2xl">
               {initialPoster || detail?.poster ? (
                 <>
                   <Image
                     src={processImageUrl(initialPoster || detail?.poster || '')}
                     alt={detail?.title || 'Video Poster'}
                     fill
-                    className='object-cover'
-                    referrerPolicy='no-referrer'
+                    className="object-cover"
+                    referrerPolicy="no-referrer"
                   />
-                  
                 </>
-              ) : (isLoadingApi ? <div className='w-full h-full bg-gray-500 dark:bg-gray-400 animate-pulse'></div> : null)}
+              ) : isLoadingApi ? (
+                <div className="w-full h-full bg-gray-500 dark:bg-gray-400 animate-pulse"></div>
+              ) : null}
             </div>
           </div>
 
-          <div className='md:col-span-2 lg:col-span-3 flex flex-col'>
-            <div className='flex items-center gap-2 mb-3'>
-              <h1 className='text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100'>
-                {detail?.title ? detail.title : (isLoadingApi ? <div className='h-10 bg-gray-500 dark:bg-gray-400 rounded w-3/4 mb-3 animate-pulse'></div> : null)}
+          <div className="md:col-span-2 lg:col-span-3 flex flex-col">
+            <div className="flex items-center gap-2 mb-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
+                {detail?.title ? (
+                  detail.title
+                ) : isLoadingApi ? (
+                  <div className="h-10 bg-gray-500 dark:bg-gray-400 rounded w-3/4 mb-3 animate-pulse"></div>
+                ) : null}
               </h1>
               {isMobile && (
                 <button
@@ -524,53 +576,62 @@ function DetailPageClient() {
                   <Heart
                     size={24}
                     className={`transition-all duration-300 ease-out ${
-                      isFavorited ? 'fill-red-500 stroke-red-500' : 'fill-transparent stroke-gray-600 dark:stroke-gray-300'
+                      isFavorited
+                        ? 'fill-red-500 stroke-red-500'
+                        : 'fill-transparent stroke-gray-600 dark:stroke-gray-300'
                     }`}
                   />
                 </button>
               )}
             </div>
 
-            <div className='flex flex-row flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400 mb-6'>
+            <div className="flex flex-row flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
               {/* 豆瓣评分 - 第一 */}
               {rate && (
-                <span className='px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1'>
-                  <Star size={14} className='fill-current text-yellow-400' />
+                <span className="px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                  <Star size={14} className="fill-current text-yellow-400" />
                   {rate}
                 </span>
               )}
 
               {/* 年份 - 第二 */}
               {detail?.year ? (
-                <span className='px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300'>
+                <span className="px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
                   {detail.year}
                 </span>
-              ) : (isLoadingApi ? <div className='h-6 bg-gray-500 dark:bg-gray-400 rounded w-16 animate-pulse'></div> : null)}
+              ) : isLoadingApi ? (
+                <div className="h-6 bg-gray-500 dark:bg-gray-400 rounded w-16 animate-pulse"></div>
+              ) : null}
 
               {/* 类别 - 第三 */}
               {detail?.class ? (
-                <span className='px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300'>
+                <span className="px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
                   {detail.class}
                 </span>
-              ) : (isLoadingApi ? <div className='h-6 bg-gray-500 dark:bg-gray-400 rounded w-24 animate-pulse'></div> : null)}
+              ) : isLoadingApi ? (
+                <div className="h-6 bg-gray-500 dark:bg-gray-400 rounded w-24 animate-pulse"></div>
+              ) : null}
 
               {/* 国家 - 第四 */}
               {detail?.country ? (
-                <span className='px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300'>
+                <span className="px-2 py-1 border border-gray-400/60 rounded-md text-xs font-medium text-gray-600 dark:text-gray-300">
                   {detail.country}
                 </span>
-              ) : (isLoadingApi ? <div className='h-6 bg-gray-500 dark:bg-gray-400 rounded w-24 animate-pulse'></div> : null)}
-              
+              ) : isLoadingApi ? (
+                <div className="h-6 bg-gray-500 dark:bg-gray-400 rounded w-24 animate-pulse"></div>
+              ) : null}
             </div>
 
-            <div className='mb-6 flex flex-row items-center gap-4'>
+            <div className="mb-6 flex flex-row items-center gap-4">
               <button
                 onClick={handlePlay}
-                className='w-1/2 sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-blue-350 bg-opacity-80 text-white font-bold rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-400 transition-all duration-300 transform hover:scale-105'
+                className="w-1/2 sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-blue-350 bg-opacity-80 text-white font-bold rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-400 transition-all duration-300 transform hover:scale-105"
                 disabled={!detail?.title || !detail?.year} // 只要有title和year值即可点击
               >
                 <PlayCircle size={24} />
-                <span className='whitespace-nowrap'>{isMobile ? '播放' : '立即播放'}</span>
+                <span className="whitespace-nowrap">
+                  {isMobile ? '播放' : '立即播放'}
+                </span>
               </button>
               {/* 新的预告片按钮 */}
               <button
@@ -582,69 +643,91 @@ function DetailPageClient() {
                     setShowNoTrailerDialog(true);
                   }
                 }}
-                className='w-1/2 sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-blue-350 bg-opacity-80 text-white font-bold rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-400 transition-all duration-300 transform hover:scale-105'
+                className="w-1/2 sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-blue-350 bg-opacity-80 text-white font-bold rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-400 transition-all duration-300 transform hover:scale-105"
                 disabled={isLoadingApi}
               >
                 <Video size={24} />
-                <span className='whitespace-nowrap'>预告</span>
+                <span className="whitespace-nowrap">预告</span>
               </button>
-              
-            {!isMobile && (
+
+              {!isMobile && (
                 <button
                   onClick={handleFavorite}
-                  className={`w-1/2 flex items-center justify-center gap-2 px-8 py-4 bg-gray-400 sm:${isFavorited ? 'bg-gray-300' : 'bg-gray-400'} bg-opacity-80 text-white font-bold rounded-lg shadow-lg active:bg-gray-300 transition-all duration-300 transform sm:w-14 sm:h-14 sm:rounded-full sm:px-0 sm:py-0 md:hover:bg-gray-400 md:hover:scale-105`}
+                  className={`w-1/2 flex items-center justify-center gap-2 px-8 py-4 bg-gray-400 sm:${
+                    isFavorited ? 'bg-gray-300' : 'bg-gray-400'
+                  } bg-opacity-80 text-white font-bold rounded-lg shadow-lg active:bg-gray-300 transition-all duration-300 transform sm:w-14 sm:h-14 sm:rounded-full sm:px-0 sm:py-0 md:hover:bg-gray-400 md:hover:scale-105`}
                   disabled={isFavoriting}
                 >
                   <Heart
                     size={24}
                     className={`transition-all duration-300 ease-out ${
-                      isFavorited ? 'fill-red-500 stroke-red-500' : 'fill-transparent stroke-white'
+                      isFavorited
+                        ? 'fill-red-500 stroke-red-500'
+                        : 'fill-transparent stroke-white'
                     }`}
                   />
-                  <span className='sm:hidden whitespace-nowrap'>{isFavorited ? '已收藏' : '收藏'}</span>
+                  <span className="sm:hidden whitespace-nowrap">
+                    {isFavorited ? '已收藏' : '收藏'}
+                  </span>
                 </button>
               )}
             </div>
-            <div className='flex-grow mb-6'>
+            <div className="flex-grow mb-6">
               {detail?.desc ? (
-                <p className='text-gray-700 dark:text-gray-300 leading-relaxed'>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {detail.desc}
                 </p>
-              ) : (isLoadingApi ? <div className='space-y-2'>
-                  <div className='h-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse'></div>
-                  <div className='h-4 bg-gray-500 dark:bg-gray-400 rounded w-5/6 animate-pulse'></div>
-                  <div className='h-4 bg-gray-500 dark:bg-gray-400 rounded w-4/6 animate-pulse'></div>
-                </div> : null)}
+              ) : isLoadingApi ? (
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse"></div>
+                  <div className="h-4 bg-gray-500 dark:bg-gray-400 rounded w-5/6 animate-pulse"></div>
+                  <div className="h-4 bg-gray-500 dark:bg-gray-400 rounded w-4/6 animate-pulse"></div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
         {/* 演职员表部分 */}
-        {isLoadingApi && doubanId && (!detail?.celebrities || detail.celebrities.length === 0) ? (
-          <div className='mt-8'>
-            <div className='h-8 w-48 mb-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse'></div> {/* 标题占位符 */}
+        {isLoadingApi &&
+        doubanId &&
+        (!detail?.celebrities || detail.celebrities.length === 0) ? (
+          <div className="mt-8">
+            <div className="h-8 w-48 mb-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse"></div>{' '}
+            {/* 标题占位符 */}
             <div className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
               {Array.from({ length: 9 }).map((_, index) => (
-                <div key={index} className="flex-none w-32 sm:w-44 flex flex-col items-center text-center">
+                <div
+                  key={index}
+                  className="flex-none w-32 sm:w-44 flex flex-col items-center text-center"
+                >
                   <div className="relative w-full aspect-[2/3] rounded-lg bg-gray-500 dark:bg-gray-400 animate-pulse mb-2"></div>
-                  <div className="h-5 bg-gray-500 dark:bg-gray-400 rounded w-3/4 mb-1 animate-pulse"></div> {/* 将h-4更改为h-5 */}
+                  <div className="h-5 bg-gray-500 dark:bg-gray-400 rounded w-3/4 mb-1 animate-pulse"></div>{' '}
+                  {/* 将h-4更改为h-5 */}
                   <div className="h-4 bg-gray-500 dark:bg-gray-400 rounded w-1/2 animate-pulse"></div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          detail?.celebrities && detail.celebrities.length > 0 && (
+          detail?.celebrities &&
+          detail.celebrities.length > 0 && (
             <CelebritiesSection celebrities={detail.celebrities} />
           )
         )}
 
         {/* 推荐部分 */}
-        {isLoadingApi && doubanId && (!detail?.recommendations || detail.recommendations.length === 0) ? (
-          <div className='mt-8'>
-            <div className='h-8 w-48 mb-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse'></div> {/* 标题占位符 */}
+        {isLoadingApi &&
+        doubanId &&
+        (!detail?.recommendations || detail.recommendations.length === 0) ? (
+          <div className="mt-8">
+            <div className="h-8 w-48 mb-4 bg-gray-500 dark:bg-gray-400 rounded animate-pulse"></div>{' '}
+            {/* 标题占位符 */}
             <div className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
               {Array.from({ length: 9 }).map((_, index) => (
-                <div key={index} className="flex-none w-32 sm:w-44 flex flex-col items-center text-center">
+                <div
+                  key={index}
+                  className="flex-none w-32 sm:w-44 flex flex-col items-center text-center"
+                >
                   <div className="relative w-full aspect-[2/3] rounded-lg bg-gray-500 dark:bg-gray-400 animate-pulse mb-2"></div>
                   <div className="h-5 bg-gray-500 dark:bg-gray-400 rounded w-3/4 mb-1 animate-pulse"></div>
                 </div>
@@ -652,7 +735,8 @@ function DetailPageClient() {
             </div>
           </div>
         ) : (
-          detail?.recommendations && detail.recommendations.length > 0 && (
+          detail?.recommendations &&
+          detail.recommendations.length > 0 && (
             <RecommendationSection recommendations={detail.recommendations} />
           )
         )}
@@ -679,11 +763,10 @@ function DetailPageClient() {
   );
 }
 
-export default function DetailPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const key = JSON.stringify(searchParams);
+export default function DetailPage() {
   return (
     <Suspense>
-      <DetailPageClient key={key} />
+      <DetailPageClient />
     </Suspense>
   );
 }

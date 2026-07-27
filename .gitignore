@@ -1,0 +1,12 @@
+/artifacts/
+/.next/
+/node_modules/
+/next-env.d.ts
+/public/manifest.json
+/public/sw.js
+/public/workbox-*.js
+/src/lib/runtime.ts
+
+.env
+.env.local
+.env.*.local

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { isDoubanImageUrl, parsePublicHttpUrl } from '@/lib/url-security';
+
 export const runtime = 'edge';
 
 // OrionTV 兼容接口
@@ -11,8 +13,24 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing image URL' }, { status: 400 });
   }
 
+  const target = parsePublicHttpUrl(imageUrl);
+  if (
+    target?.protocol === 'http:' &&
+    (target.hostname === 'doubanio.com' ||
+      target.hostname.endsWith('.doubanio.com'))
+  ) {
+    target.protocol = 'https:';
+  }
+  if (!target || !isDoubanImageUrl(target)) {
+    return NextResponse.json(
+      { error: 'Only HTTPS images from doubanio.com are allowed' },
+      { status: 400 }
+    );
+  }
+
   try {
-    const imageResponse = await fetch(imageUrl, {
+    const imageResponse = await fetch(target, {
+      redirect: 'error',
       headers: {
         Referer: 'https://movie.douban.com/',
         'User-Agent':
@@ -28,6 +46,12 @@ export async function GET(request: Request) {
     }
 
     const contentType = imageResponse.headers.get('content-type');
+    if (!contentType?.toLowerCase().startsWith('image/')) {
+      return NextResponse.json(
+        { error: 'Upstream response is not an image' },
+        { status: 415 }
+      );
+    }
 
     if (!imageResponse.body) {
       return NextResponse.json(
@@ -38,9 +62,8 @@ export async function GET(request: Request) {
 
     // 创建响应头
     const headers = new Headers();
-    if (contentType) {
-      headers.set('Content-Type', contentType);
-    }
+    headers.set('Content-Type', contentType);
+    headers.set('X-Content-Type-Options', 'nosniff');
 
     // 设置缓存头（可选）
     headers.set('Cache-Control', 'public, max-age=15720000, s-maxage=15720000'); // 缓存半年

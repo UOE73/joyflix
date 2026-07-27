@@ -1,0 +1,39 @@
+diff --git a/services/api.ts b/services/api.ts
+index 7d6e26c..f1d1013 100644
+--- a/services/api.ts
++++ b/services/api.ts
+@@ -93,9 +93,25 @@ export class API {
+       throw new Error("API_URL_NOT_SET");
+     }
+ 
+-    const response = await fetch(`${this.baseURL}${url}`, options);
++    // React Native's cookie handling is not consistent across platforms.
++    // login() persists the Set-Cookie response, so explicitly attach its
++    // cookie pair to every subsequent request.
++    const storedCookies = await AsyncStorage.getItem("authCookies");
++    const cookieHeader = storedCookies?.split(";", 1)[0]?.trim();
++    const headers = new Headers(options.headers);
++
++    if (cookieHeader && !headers.has("Cookie")) {
++      headers.set("Cookie", cookieHeader);
++    }
++
++    const response = await fetch(`${this.baseURL}${url}`, {
++      ...options,
++      credentials: "include",
++      headers,
++    });
+ 
+     if (response.status === 401) {
++      await AsyncStorage.removeItem("authCookies");
+       throw new Error("UNAUTHORIZED");
+     }
+ 
+@@ -127,6 +143,6 @@ export class API {
+       method: "POST",
+     });
+-    await AsyncStorage.setItem("authCookies", '');
++    await AsyncStorage.removeItem("authCookies");
+     return response.json();
+   }
+ 
