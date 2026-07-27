@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthInfoFromCookie } from '@/lib/auth';
 import { getConfig } from '@/lib/config';
 import { searchFromApi } from '@/lib/downstream';
+import { normalizeSearchQuery } from '@/lib/search-query';
 
 export const runtime = 'edge';
 
@@ -64,7 +65,7 @@ async function generateSuggestions(query: string): Promise<
     score: number;
   }>
 > {
-  const queryLower = query.toLowerCase();
+  const normalizedQuery = normalizeSearchQuery(query).toLowerCase();
 
   const config = await getConfig();
   const apiSites = config.SourceConfig.filter((site: any) => !site.disabled);
@@ -82,7 +83,9 @@ async function generateSuggestions(query: string): Promise<
           .filter(Boolean)
           .flatMap((title: string) => title.split(/[ -:：·、-]/))
           .filter(
-            (w: string) => w.length > 1 && w.toLowerCase().includes(queryLower)
+            (w: string) =>
+              w.length > 1 &&
+              normalizeSearchQuery(w).toLowerCase().includes(normalizedQuery)
           )
       )
     ).slice(0, 8);
@@ -90,19 +93,19 @@ async function generateSuggestions(query: string): Promise<
 
   // 根据关键词与查询的匹配程度计算分数，并动态确定类型
   const realSuggestions = realKeywords.map((word) => {
-    const wordLower = word.toLowerCase();
-    const queryWords = queryLower.split(/[ -:：·、-]/);
+    const normalizedWord = normalizeSearchQuery(word).toLowerCase();
+    const queryWords = normalizedQuery.split(/[ -:：·、-]/);
 
     // 计算匹配分数：完全匹配得分更高
     let score = 1.0;
-    if (wordLower === queryLower) {
+    if (normalizedWord === normalizedQuery) {
       score = 2.0; // 完全匹配
     } else if (
-      wordLower.startsWith(queryLower) ||
-      wordLower.endsWith(queryLower)
+      normalizedWord.startsWith(normalizedQuery) ||
+      normalizedWord.endsWith(normalizedQuery)
     ) {
       score = 1.8; // 前缀或后缀匹配
-    } else if (queryWords.some((qw) => wordLower.includes(qw))) {
+    } else if (queryWords.some((qw) => normalizedWord.includes(qw))) {
       score = 1.5; // 包含查询词
     }
 

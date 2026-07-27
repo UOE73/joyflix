@@ -12,6 +12,7 @@ import {
   getSearchHistory,
   subscribeToDataUpdates,
 } from '@/lib/db.client';
+import { normalizeSearchComparable } from '@/lib/search-query';
 import { DoubanResult, SearchResult } from '@/lib/types';
 
 import PageLayout from '@/components/PageLayout';
@@ -44,15 +45,17 @@ const SearchPageClient: React.FC = () => {
     const map = new Map<string, SearchResult[]>();
     searchResults.forEach((item) => {
       // 使用 title + year 作为键进行聚合，year 必然存在，但依然兜底 'unknown'
-      const key = `${item.title.replaceAll(' ', '')}-${item.year || 'unknown'}`;
+      const key = `${normalizeSearchComparable(item.title)}-${
+        item.year || 'unknown'
+      }`;
       const arr = map.get(key) || [];
       arr.push(item);
       map.set(key, arr);
     });
     return Array.from(map.entries()).sort((a, b) => {
-      const normalizedSearchQuery = searchQuery.trim().replaceAll(' ', '');
-      const aTitleNormalized = a[1][0].title.replaceAll(' ', '');
-      const bTitleNormalized = b[1][0].title.replaceAll(' ', '');
+      const normalizedSearchQuery = normalizeSearchComparable(searchQuery);
+      const aTitleNormalized = normalizeSearchComparable(a[1][0].title);
+      const bTitleNormalized = normalizeSearchComparable(b[1][0].title);
 
       // 新增首要排序：标题与搜索词完全一致的排在最前面
       const aPerfectMatch = aTitleNormalized === normalizedSearchQuery;
@@ -206,11 +209,12 @@ const SearchPageClient: React.FC = () => {
           if (line.trim() === '') continue;
           try {
             const newResultsChunk: SearchResult[] = JSON.parse(line);
+            const comparableQuery = normalizeSearchComparable(query);
 
             let filteredResults = newResultsChunk.filter((result) => {
-              const lowerCaseQuery = query.trim().toLowerCase();
-              const lowerCaseTitle = result.title.toLowerCase();
-              return lowerCaseTitle.includes(lowerCaseQuery);
+              return normalizeSearchComparable(result.title).includes(
+                comparableQuery
+              );
             });
 
             const filterKeywords = ['电影解说', '剧情解说', '预告片', '解说'];
@@ -231,8 +235,10 @@ const SearchPageClient: React.FC = () => {
               setSearchResults((prevResults) => {
                 const allResults = [...prevResults, ...filteredResults];
                 return allResults.sort((a, b) => {
-                  const aExactMatch = a.title === query.trim();
-                  const bExactMatch = b.title === query.trim();
+                  const aExactMatch =
+                    normalizeSearchComparable(a.title) === comparableQuery;
+                  const bExactMatch =
+                    normalizeSearchComparable(b.title) === comparableQuery;
                   if (aExactMatch && !bExactMatch) return -1;
                   if (!aExactMatch && bExactMatch) return 1;
 

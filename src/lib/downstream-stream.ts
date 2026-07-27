@@ -1,4 +1,8 @@
 import { API_CONFIG, ApiSite } from '@/lib/config';
+import {
+  normalizeSearchComparable,
+  normalizeSearchQuery,
+} from '@/lib/search-query';
 import { SearchResult } from '@/lib/types';
 import { cleanHtmlTags } from '@/lib/utils';
 
@@ -75,8 +79,13 @@ export async function searchAndFindFromApi(
   maxPages: number
 ): Promise<SearchResult | null> {
   try {
+    const normalizedQuery = normalizeSearchQuery(query);
+    const comparableQuery = normalizeSearchComparable(query);
     const apiBaseUrl = apiSite.api;
-    const firstPageUrl = apiBaseUrl + API_CONFIG.search.path + encodeURIComponent(query);
+    const firstPageUrl =
+      apiBaseUrl +
+      API_CONFIG.search.path +
+      encodeURIComponent(normalizedQuery);
     const apiName = apiSite.name;
 
     const controller = new AbortController();
@@ -99,7 +108,7 @@ export async function searchAndFindFromApi(
     // 在第一页查找匹配项
     for (const item of data.list) {
       if (
-        item.vod_name.replaceAll(' ', '').toLowerCase() === query.replaceAll(' ', '').toLowerCase() &&
+        normalizeSearchComparable(item.vod_name) === comparableQuery &&
         (year ? item.vod_year === year : true)
       ) {
         const { episodes, titles } = parseVodPlayUrl(item.vod_play_url || '');
@@ -116,7 +125,7 @@ export async function searchAndFindFromApi(
         const pageUrl =
           apiBaseUrl +
           API_CONFIG.search.pagePath
-            .replace('{query}', encodeURIComponent(query))
+            .replace('{query}', encodeURIComponent(normalizedQuery))
             .replace('{page}', page.toString());
         
         try {
@@ -136,7 +145,7 @@ export async function searchAndFindFromApi(
 
           for (const item of pageData.list) {
             if (
-              item.vod_name.replaceAll(' ', '').toLowerCase() === query.replaceAll(' ', '').toLowerCase() &&
+              normalizeSearchComparable(item.vod_name) === comparableQuery &&
               (year ? item.vod_year === year : true)
             ) {
               const { episodes, titles } = parseVodPlayUrl(item.vod_play_url || '');

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getCacheTime, getConfig } from '@/lib/config';
 import { searchFromApi } from '@/lib/downstream';
+import { normalizeSearchComparable } from '@/lib/search-query';
 
 
 export const runtime = 'edge';
@@ -44,8 +45,11 @@ export async function GET(request: Request) {
     }
 
     const results = await searchFromApi(targetSite, query);
-    let result = results.filter((r) => r.title === query);
-    
+    const comparableQuery = normalizeSearchComparable(query);
+    const result = results.filter(
+      (r) => normalizeSearchComparable(r.title) === comparableQuery
+    );
+
     const cacheTime = await getCacheTime();
 
     if (result.length === 0) {

@@ -1,4 +1,5 @@
 import { API_CONFIG, ApiSite, getConfig } from '@/lib/config';
+import { normalizeSearchQuery } from '@/lib/search-query';
 import { SearchResult } from '@/lib/types';
 import { cleanHtmlTags } from '@/lib/utils';
 
@@ -20,9 +21,12 @@ export async function searchFromApi(
   query: string
 ): Promise<SearchResult[]> {
   try {
+    const normalizedQuery = normalizeSearchQuery(query);
     const apiBaseUrl = apiSite.api;
     const apiUrl =
-      apiBaseUrl + API_CONFIG.search.path + encodeURIComponent(query);
+      apiBaseUrl +
+      API_CONFIG.search.path +
+      encodeURIComponent(normalizedQuery);
     const apiName = apiSite.name;
 
     // 添加超时处理
@@ -114,7 +118,7 @@ export async function searchFromApi(
         const pageUrl =
           apiBaseUrl +
           API_CONFIG.search.pagePath
-            .replace('{query}', encodeURIComponent(query))
+            .replace('{query}', encodeURIComponent(normalizedQuery))
             .replace('{page}', page.toString());
 
         const pagePromise = (async () => {

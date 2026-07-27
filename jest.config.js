@@ -20,10 +20,16 @@ const customJestConfig = {
    * Absolute imports and Module Path Aliases
    */
   moduleNameMapper: {
+    '^opencc-js/t2cn$':
+      '<rootDir>/node_modules/opencc-js/dist/umd/t2cn.js',
     '^@/(.*)$': '<rootDir>/src/$1',
     '^~/(.*)$': '<rootDir>/public/$1',
     '^.+\\.(svg)$': '<rootDir>/src/__mocks__/svg.tsx',
   },
+
+  // opencc-js is published as ESM and needs to be transformed for Jest 27.
+  transformIgnorePatterns: ['/node_modules/(?!(opencc-js)/)'],
+  modulePathIgnorePatterns: ['<rootDir>/.next/standalone/'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

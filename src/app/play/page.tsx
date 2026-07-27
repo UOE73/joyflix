@@ -18,6 +18,7 @@ import {
   saveSkipConfig,
   subscribeToDataUpdates,
 } from '@/lib/db.client';
+import { normalizeSearchComparable } from '@/lib/search-query';
 import { SearchResult } from '@/lib/types';
 import { getVideoResolutionFromM3u8, processImageUrl } from '@/lib/utils';
 
@@ -1244,10 +1245,12 @@ function PlayPageClient() {
         const data = await response.json();
 
         // 处理搜索结果，根据规则过滤
+        const comparableVideoTitle = normalizeSearchComparable(
+          videoTitleRef.current
+        );
         const results = data.results.filter(
           (result: SearchResult) =>
-            result.title.replaceAll(' ', '').toLowerCase() ===
-              videoTitleRef.current.replaceAll(' ', '').toLowerCase() &&
+            normalizeSearchComparable(result.title) === comparableVideoTitle &&
             (videoYearRef.current
               ? result.year.toLowerCase() === videoYearRef.current.toLowerCase()
               : true) &&
