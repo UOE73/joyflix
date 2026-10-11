@@ -3,9 +3,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import {
+  AUTH_COOKIE_MAX_AGE_SECONDS,
   getAuthInfoFromCookie,
   getAuthSignaturePayload,
-  isAuthSessionFresh,
+  isSecureRequest,
+  serializeAuthInfo,
   verifyAuthSignature,
 } from '@/lib/auth';
 
@@ -34,7 +36,6 @@ export async function middleware(request: NextRequest) {
 
   if (
     !authInfo.signature ||
-    !isAuthSessionFresh(authInfo.timestamp) ||
     (storageType !== 'localstorage' && !authInfo.username)
   ) {
     return handleAuthFailure(request, pathname);
@@ -49,7 +50,18 @@ export async function middleware(request: NextRequest) {
     return handleAuthFailure(request, pathname);
   }
 
-  return NextResponse.next();
+  // Renew the browser's persistent-cookie window on every authenticated
+  // request. The HMAC remains the source of truth, so changing PASSWORD or
+  // explicitly logging out still invalidates access without a weekly prompt.
+  const response = NextResponse.next();
+  response.cookies.set('auth', serializeAuthInfo(authInfo), {
+    path: '/',
+    maxAge: AUTH_COOKIE_MAX_AGE_SECONDS,
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: isSecureRequest(request),
+  });
+  return response;
 }
 
 // 处理认证失败的情况

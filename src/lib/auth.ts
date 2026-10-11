@@ -10,7 +10,11 @@ export interface AuthInfo {
 }
 
 const BROWSER_AUTH_KEY = 'joyflixAuthInfo';
-export const AUTH_SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// Chromium caps persistent cookies at 400 days. Middleware renews this window
+// after every authenticated request, while the signed value itself does not
+// expire merely because time passed. This also keeps TV clients that persist
+// the cookie value from being forced to re-enter a password periodically.
+export const AUTH_COOKIE_MAX_AGE_SECONDS = 400 * 24 * 60 * 60;
 
 function isAuthRole(value: unknown): value is AuthRole {
   return value === 'owner' || value === 'admin' || value === 'user';
@@ -51,6 +55,10 @@ export function getAuthInfoFromCookie(request: NextRequest): AuthInfo | null {
   } catch {
     return null;
   }
+}
+
+export function serializeAuthInfo(authInfo: AuthInfo): string {
+  return encodeURIComponent(JSON.stringify(authInfo));
 }
 
 export function getAuthSignaturePayload(
@@ -116,15 +124,6 @@ export async function verifyAuthSignature(
   } catch {
     return false;
   }
-}
-
-export function isAuthSessionFresh(
-  timestamp: number | undefined,
-  now = Date.now()
-): boolean {
-  if (!timestamp) return false;
-  const age = now - timestamp;
-  return age >= -5 * 60 * 1000 && age <= AUTH_SESSION_MAX_AGE_MS;
 }
 
 export function isSecureRequest(request: NextRequest): boolean {

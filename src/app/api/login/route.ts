@@ -2,10 +2,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import {
+  AUTH_COOKIE_MAX_AGE_SECONDS,
   AuthInfo,
   createAuthSignature,
   getAuthSignaturePayload,
   isSecureRequest,
+  serializeAuthInfo,
 } from '@/lib/auth';
 import { getConfig } from '@/lib/config';
 import { db } from '@/lib/db';
@@ -37,7 +39,7 @@ async function generateAuthCookie(
     getAuthSignaturePayload(authData),
     secret
   );
-  return encodeURIComponent(JSON.stringify(authData));
+  return serializeAuthInfo(authData);
 }
 
 async function createLoginResponse(
@@ -53,7 +55,7 @@ async function createLoginResponse(
 
   response.cookies.set('auth', cookieValue, {
     path: '/',
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    maxAge: AUTH_COOKIE_MAX_AGE_SECONDS,
     sameSite: 'lax',
     httpOnly: true,
     secure: isSecureRequest(req),
